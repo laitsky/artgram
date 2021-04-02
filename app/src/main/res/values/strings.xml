@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Artgram</string>
+    <!-- EditText Username Type -->
+    <string name="username_type">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
 </resources>
