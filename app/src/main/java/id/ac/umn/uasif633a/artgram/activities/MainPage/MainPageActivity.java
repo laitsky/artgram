@@ -23,14 +23,20 @@ public class MainPageActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.activity_main_page_btn_login);
         btnRegister = findViewById(R.id.activity_main_page_btn_register);
 
-        btnLogin.setOnClickListener(v -> {
-            Intent intent = new Intent(MainPageActivity.this, LoginActivity.class);
-            startActivity(intent);
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainPageActivity.this, LoginActivity.class);
+                MainPageActivity.this.startActivity(intent);
+            }
         });
 
-        btnRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(MainPageActivity.this, RegisterActivity.class);
-            startActivity(intent);
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainPageActivity.this, RegisterActivity.class);
+                MainPageActivity.this.startActivity(intent);
+            }
         });
 
     }

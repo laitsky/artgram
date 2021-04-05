@@ -50,17 +50,20 @@ public class RegisterActivity extends AppCompatActivity {
         etFullName = findViewById(R.id.activity_register_et_full_name);
         btnRegister = findViewById(R.id.activity_register_btn_register);
 
-        btnRegister.setOnClickListener(v -> {
-            email = etEmail.getText().toString();
-            password = etPassword.getText().toString();
-            username = etUsername.getText().toString();
-            fullName = etFullName.getText().toString();
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                email = etEmail.getText().toString();
+                password = etPassword.getText().toString();
+                username = etUsername.getText().toString();
+                fullName = etFullName.getText().toString();
 
-            if (email.equals("") || password.equals("")
-                    || username.equals("") || fullName.equals("")) {
-                Toast.makeText(RegisterActivity.this, "Lengkapi data kamu!", Toast.LENGTH_SHORT).show();
-            } else {
-                registerAccount(email, password, username, fullName);
+                if (email.equals("") || password.equals("")
+                        || username.equals("") || fullName.equals("")) {
+                    Toast.makeText(RegisterActivity.this, "Lengkapi data kamu!", Toast.LENGTH_SHORT).show();
+                } else {
+                    RegisterActivity.this.registerAccount(email, password, username, fullName);
+                }
             }
         });
     }
@@ -82,32 +85,43 @@ public class RegisterActivity extends AppCompatActivity {
         newUser.put("email", email);
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        firebaseDb.collection("users")
-                                .document(username)
-                                .set(newUser)
-                                .addOnSuccessListener(aVoid -> {
-                                    // Daftar akun berhasil
-                                    Log.d(TAG, "berhasil mendaftarkan akun");
-                                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                    startActivity(intent);
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e(TAG, "error menambahkan data ke koleksi", e);
-                                    Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            firebaseDb.collection("users")
+                                    .document(username)
+                                    .set(newUser)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Daftar akun berhasil
+                                            Log.d(TAG, "berhasil mendaftarkan akun");
+                                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                            RegisterActivity.this.startActivity(intent);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e(TAG, "error menambahkan data ke koleksi", e);
+                                            Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
 
-                    } else {
-                        // Daftar akun gagal
-                        Log.w(TAG, "gagal mendaftarkan akun", task.getException());
-                        Toast.makeText(RegisterActivity.this, task.getException().getLocalizedMessage(),
-                                Toast.LENGTH_SHORT).show();
-                        // Membersihkan input
-                        etEmail.setText("");
-                        etPassword.setText("");
-                        etUsername.setText("");
-                        etFullName.setText("");
+                        } else {
+                            // Daftar akun gagal
+                            if (task.getException() != null) {
+                                Log.w(TAG, "gagal mendaftarkan akun", task.getException());
+                                Toast.makeText(RegisterActivity.this, task.getException().getLocalizedMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            // Membersihkan input
+                            etEmail.setText("");
+                            etPassword.setText("");
+                            etUsername.setText("");
+                            etFullName.setText("");
+                        }
                     }
                 });
     }

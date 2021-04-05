@@ -46,14 +46,17 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.activity_login_et_password);
         btnLogin = findViewById(R.id.activity_login_btn_login);
 
-        btnLogin.setOnClickListener(v -> {
-            username = etUsername.getText().toString();
-            password = etPassword.getText().toString();
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                username = etUsername.getText().toString();
+                password = etPassword.getText().toString();
 
-            if (username.equals("") || password.equals("")) {
-                Toast.makeText(LoginActivity.this, "Data login tidak lengkap!", Toast.LENGTH_SHORT).show();
-            } else {
-                login(username, password);
+                if (username.equals("") || password.equals("")) {
+                    Toast.makeText(LoginActivity.this, "Data login tidak lengkap!", Toast.LENGTH_SHORT).show();
+                } else {
+                    LoginActivity.this.login(username, password);
+                }
             }
         });
     }
@@ -64,37 +67,48 @@ public class LoginActivity extends AppCompatActivity {
         firebaseDb.collection("users")
                 .document(username)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    try {
-                        Log.w(TAG, documentSnapshot.get("email").toString());
-                        email = documentSnapshot.get("email").toString();
-                        // Jika email berhasil ditemukan (berarti data ada),
-                        // maka kita akan melakukan proses sign in disini.
-                        firebaseAuth.signInWithEmailAndPassword(email, password)
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                                        Intent intent = new Intent(LoginActivity.this, WallFeedsActivity.class);
-                                        startActivity(intent);
-                                    } else {
-                                        // Login gagal
-                                        etPassword.setText("");
-                                        Toast.makeText(LoginActivity.this, "Password yang kamu masukkan salah!",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        try {
+                            if (documentSnapshot != null) {
+                                Log.w(TAG, documentSnapshot.get("email").toString());
+                                email = documentSnapshot.get("email").toString();
+                            }
+                            // Jika email berhasil ditemukan (berarti data ada),
+                            // maka kita akan melakukan proses sign in disini.
+                            firebaseAuth.signInWithEmailAndPassword(email, password)
+                                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if (task.isSuccessful()) {
+                                                FirebaseUser user = firebaseAuth.getCurrentUser();
+                                                Intent intent = new Intent(LoginActivity.this, WallFeedsActivity.class);
+                                                LoginActivity.this.startActivity(intent);
+                                            } else {
+                                                // Login gagal
+                                                etPassword.setText("");
+                                                Toast.makeText(LoginActivity.this, "Password yang kamu masukkan salah!",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
 
-                    } catch (NullPointerException e) {
-                        Toast.makeText(LoginActivity.this, "Akun tidak ditemukan!",
-                                Toast.LENGTH_SHORT).show();
+                        } catch (NullPointerException e) {
+                            Toast.makeText(LoginActivity.this, "Akun tidak ditemukan!",
+                                    Toast.LENGTH_SHORT).show();
+                            etUsername.setText("");
+                            etPassword.setText("");
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         etUsername.setText("");
                         etPassword.setText("");
                     }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    etUsername.setText("");
-                    etPassword.setText("");
                 });
     }
 }
