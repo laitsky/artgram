@@ -1,4 +1,4 @@
-package id.ac.umn.uasif633a.artgram.activities.Main;
+package id.ac.umn.uasif633a.artgram.activities;
 
 import android.os.Bundle;
 import android.util.Log;

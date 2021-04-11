@@ -1,4 +1,4 @@
-package id.ac.umn.uasif633a.artgram.activities.Login;
+package id.ac.umn.uasif633a.artgram.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +22,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import id.ac.umn.uasif633a.artgram.R;
-import id.ac.umn.uasif633a.artgram.activities.Main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";

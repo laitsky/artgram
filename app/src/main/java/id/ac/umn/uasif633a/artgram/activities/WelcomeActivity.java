@@ -1,4 +1,4 @@
-package id.ac.umn.uasif633a.artgram.activities.Welcome;
+package id.ac.umn.uasif633a.artgram.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 
 import id.ac.umn.uasif633a.artgram.R;
-import id.ac.umn.uasif633a.artgram.activities.Login.LoginActivity;
-import id.ac.umn.uasif633a.artgram.activities.Register.RegisterActivity;
 
 public class WelcomeActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;

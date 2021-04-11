@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.Register.RegisterActivity">
+    tools:context=".activities.RegisterActivity">
 
     <EditText
         android:id="@+id/activity_register_et_username"

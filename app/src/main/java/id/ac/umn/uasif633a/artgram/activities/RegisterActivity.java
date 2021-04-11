@@ -1,4 +1,4 @@
-package id.ac.umn.uasif633a.artgram.activities.Register;
+package id.ac.umn.uasif633a.artgram.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import id.ac.umn.uasif633a.artgram.R;
-import id.ac.umn.uasif633a.artgram.activities.Login.LoginActivity;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
