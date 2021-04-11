@@ -22,7 +22,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import id.ac.umn.uasif633a.artgram.R;
-import id.ac.umn.uasif633a.artgram.activities.WallFeeds.WallFeedsActivity;
+import id.ac.umn.uasif633a.artgram.activities.Main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (username.equals("") || password.equals("")) {
                     Toast.makeText(LoginActivity.this, "Data login tidak lengkap!", Toast.LENGTH_SHORT).show();
                 } else {
-                    LoginActivity.this.login(username, password);
+                    login(username, password);
                 }
             }
         });
@@ -83,8 +83,12 @@ public class LoginActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
                                                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                                                Intent intent = new Intent(LoginActivity.this, WallFeedsActivity.class);
-                                                LoginActivity.this.startActivity(intent);
+                                                Log.d(TAG, "onComplete: userID" + user.getUid());
+                                                Log.d(TAG, "onComplete: username" + user.getDisplayName());
+                                                Log.d(TAG, "onComplete: email" + user.getEmail());
+                                                Log.d(TAG, "onComplete: changing state...");
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                startActivity(intent);
                                             } else {
                                                 // Login gagal
                                                 etPassword.setText("");

@@ -9,10 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Artgram">
-        <activity android:name=".activities.WallFeeds.WallFeedsActivity"></activity>
+        <activity android:name=".activities.Main.MainActivity" />
         <activity android:name=".activities.Register.RegisterActivity" />
         <activity android:name=".activities.Login.LoginActivity" />
-        <activity android:name=".activities.MainPage.MainPageActivity">
+        <activity android:name=".activities.Welcome.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

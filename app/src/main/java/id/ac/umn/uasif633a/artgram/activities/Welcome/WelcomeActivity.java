@@ -1,4 +1,4 @@
-package id.ac.umn.uasif633a.artgram.activities.MainPage;
+package id.ac.umn.uasif633a.artgram.activities.Welcome;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,13 +11,13 @@ import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.activities.Login.LoginActivity;
 import id.ac.umn.uasif633a.artgram.activities.Register.RegisterActivity;
 
-public class MainPageActivity extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_page);
+        setContentView(R.layout.activity_welcome);
 
         // Inisialisasi Button pada UI
         btnLogin = findViewById(R.id.activity_main_page_btn_login);
@@ -26,16 +26,16 @@ public class MainPageActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainPageActivity.this, LoginActivity.class);
-                MainPageActivity.this.startActivity(intent);
+                Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+                WelcomeActivity.this.startActivity(intent);
             }
         });
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainPageActivity.this, RegisterActivity.class);
-                MainPageActivity.this.startActivity(intent);
+                Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
+                WelcomeActivity.this.startActivity(intent);
             }
         });
 
