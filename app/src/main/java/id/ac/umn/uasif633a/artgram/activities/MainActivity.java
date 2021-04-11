@@ -29,6 +29,12 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in,
+                        R.anim.fade_out,
+                        R.anim.fade_in,
+                        R.anim.slide_out
+                )
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
 
@@ -60,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     getSupportFragmentManager()
                             .beginTransaction()
+                            .setCustomAnimations(
+                                    R.anim.slide_in,
+                                    R.anim.fade_out,
+                                    R.anim.fade_in,
+                                    R.anim.slide_out
+                            )
                             .replace(R.id.fragment_container, selectedFragment)
                             .commit();
 
