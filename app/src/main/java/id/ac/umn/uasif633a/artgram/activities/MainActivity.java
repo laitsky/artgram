@@ -18,7 +18,7 @@ import id.ac.umn.uasif633a.artgram.fragments.HomeFragment;
 import id.ac.umn.uasif633a.artgram.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "WallFeedsActivity";
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String email = user.getEmail();
+            String name = user.getDisplayName();
             Log.d(TAG, "onCreate: getting user email...: " + email);
+            Log.d(TAG, "onCreate: getting display name...:" + name);
         }
     }
 

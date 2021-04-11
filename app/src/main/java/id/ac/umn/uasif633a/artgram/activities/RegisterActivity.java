@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -57,8 +58,10 @@ public class RegisterActivity extends AppCompatActivity {
                 username = etUsername.getText().toString();
                 fullName = etFullName.getText().toString();
 
-                if (email.equals("") || password.equals("")
-                        || username.equals("") || fullName.equals("")) {
+                if (email.equals("")
+                        || password.equals("")
+                        || username.equals("")
+                        || fullName.equals("")) {
                     Toast.makeText(RegisterActivity.this, "Lengkapi data kamu!", Toast.LENGTH_SHORT).show();
                 } else {
                     RegisterActivity.this.registerAccount(email, password, username, fullName);
@@ -88,26 +91,39 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            firebaseDb.collection("users")
-                                    .document(username)
-                                    .set(newUser)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            UserProfileChangeRequest addDisplayName = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(username)
+                                    .build();
+
+                            user.updateProfile(addDisplayName)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Daftar akun berhasil
-                                            Log.d(TAG, "berhasil mendaftarkan akun");
-                                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                            RegisterActivity.this.startActivity(intent);
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.e(TAG, "error menambahkan data ke koleksi", e);
-                                            Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "onComplete: Berhasil memperbarui nama di auth firebase");
+                                                firebaseDb.collection("users")
+                                                        .document(username)
+                                                        .set(newUser)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                // Daftar akun berhasil
+                                                                Log.d(TAG, "berhasil mendaftarkan akun");
+                                                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                                                RegisterActivity.this.startActivity(intent);
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.e(TAG, "error menambahkan data ke koleksi", e);
+                                                                Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                            }
                                         }
                                     });
-
                         } else {
                             // Daftar akun gagal
                             if (task.getException() != null) {
