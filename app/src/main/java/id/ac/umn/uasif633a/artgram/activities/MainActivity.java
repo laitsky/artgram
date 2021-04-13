@@ -11,19 +11,28 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.fragments.ExploreFragment;
 import id.ac.umn.uasif633a.artgram.fragments.HomeFragment;
 import id.ac.umn.uasif633a.artgram.fragments.ProfileFragment;
+import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProfileDataReceiver {
     private static final String TAG = "MainActivity";
+    public String username;
+    private FirebaseUser user;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Inisialisasi instance Firebase
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        firestore = FirebaseFirestore.getInstance();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
@@ -38,12 +47,10 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user != null) {
-            String email = user.getEmail();
-            String name = user.getDisplayName();
-            Log.d(TAG, "onCreate: getting user email...: " + email);
-            Log.d(TAG, "onCreate: getting display name...:" + name);
+            username = user.getDisplayName();
+            Log.d(TAG, "onCreate: getting username..." + username);
         }
     }
 
@@ -80,4 +87,9 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             };
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
 }
