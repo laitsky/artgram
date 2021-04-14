@@ -19,12 +19,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import id.ac.umn.uasif633a.artgram.R;
+import id.ac.umn.uasif633a.artgram.models.RegisterProperty;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
@@ -57,14 +60,15 @@ public class RegisterActivity extends AppCompatActivity {
                 password = etPassword.getText().toString();
                 username = etUsername.getText().toString();
                 fullName = etFullName.getText().toString();
-
+                RegisterProperty registerProperty = new RegisterProperty(email, password, username, fullName);
                 if (email.equals("")
                         || password.equals("")
                         || username.equals("")
                         || fullName.equals("")) {
                     Toast.makeText(RegisterActivity.this, "Lengkapi data kamu!", Toast.LENGTH_SHORT).show();
                 } else {
-                    RegisterActivity.this.registerAccount(email, password, username, fullName);
+                    isUsernameExist(registerProperty);
+                    //RegisterActivity.this.registerAccount(email, password, username, fullName);
                 }
             }
         });
@@ -80,23 +84,44 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void registerAccount(String email, String password, String username, String fullName) {
-        Map<String, String> newUser = new HashMap<>();
-        newUser.put("username", username);
-        newUser.put("full_name", fullName);
-        newUser.put("email", email);
+    private void isUsernameExist(RegisterProperty registerProperty) {
+        DocumentReference docRef = firebaseDb.collection("users").document(registerProperty.getUsername());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Toast.makeText(RegisterActivity.this, "Username telah dipakai", Toast.LENGTH_SHORT).show();
+                        etUsername.setText("");
+                    } else {
+                        registerAccount(registerProperty);
+                    }
+                } else {
+                    Log.d(TAG, "isUsernameExist: get failed with" + task.getException());
+                }
+            }
+        });
 
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+    }
+
+    private void registerAccount(RegisterProperty registerProperty) {
+        Map<String, String> newUser = new HashMap<>();
+        newUser.put("username", registerProperty.getUsername());
+        newUser.put("full_name", registerProperty.getFullName());
+        newUser.put("email", registerProperty.getEmail());
+
+        firebaseAuth.createUserWithEmailAndPassword(registerProperty.getEmail(), registerProperty.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             UserProfileChangeRequest addDisplayName = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(username)
+                                    .setDisplayName(registerProperty.getUsername())
                                     .build();
 
-                            updateUsernameAndCompleteRegister(user, addDisplayName, username, newUser);
+                            updateUsernameAndCompleteRegister(user, addDisplayName, registerProperty.getUsername(), newUser);
                         } else {
                             // Daftar akun gagal
                             if (task.getException() != null) {
