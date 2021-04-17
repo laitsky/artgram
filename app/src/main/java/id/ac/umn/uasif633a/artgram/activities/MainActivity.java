@@ -8,9 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import id.ac.umn.uasif633a.artgram.R;
@@ -21,9 +23,12 @@ import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
 public class MainActivity extends AppCompatActivity implements ProfileDataReceiver {
     private static final String TAG = "MainActivity";
-    public String username;
     private FirebaseUser user;
     private FirebaseFirestore firestore;
+    private String fullName;
+    private String username;
+    private String userEmail;
+    private String userBio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +52,24 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
 
-
         if (user != null) {
             username = user.getDisplayName();
-            Log.d(TAG, "onCreate: getting username..." + username);
+            userEmail = user.getEmail();
         }
+
+        firestore.collection("users")
+                .document(username)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot != null) {
+                            fullName = documentSnapshot.get("full_name").toString();
+                            userBio = documentSnapshot.get("bio").toString();
+                            Log.d(TAG, "onSuccess: getting user bio..." + userBio);
+                        }
+                    }
+                });
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
@@ -91,5 +109,20 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public String getFullName() {
+        return fullName;
+    }
+
+    @Override
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    @Override
+    public String getUserBio() {
+        return userBio;
     }
 }

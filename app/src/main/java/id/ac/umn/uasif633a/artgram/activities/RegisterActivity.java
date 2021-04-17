@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import id.ac.umn.uasif633a.artgram.R;
-import id.ac.umn.uasif633a.artgram.models.RegisterProperty;
+import id.ac.umn.uasif633a.artgram.models.UserProperty;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
@@ -36,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etEmail, etPassword, etUsername, etFullName;
     private Button btnRegister;
     private String email, password, username, fullName;
+    private String userBio = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
                 password = etPassword.getText().toString();
                 username = etUsername.getText().toString();
                 fullName = etFullName.getText().toString();
-                RegisterProperty registerProperty = new RegisterProperty(email, password, username, fullName);
+                UserProperty userProperty = new UserProperty(email, password, username, fullName, userBio);
                 if (email.equals("")
                         || password.equals("")
                         || username.equals("")
                         || fullName.equals("")) {
                     Toast.makeText(RegisterActivity.this, "Lengkapi data kamu!", Toast.LENGTH_SHORT).show();
                 } else {
-                    isUsernameExist(registerProperty);
+                    isUsernameExist(userProperty);
                     //RegisterActivity.this.registerAccount(email, password, username, fullName);
                 }
             }
@@ -84,9 +85,9 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void isUsernameExist(RegisterProperty registerProperty) {
-        DocumentReference docRef = firebaseDb.collection("users").document(registerProperty.getUsername());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+    private void isUsernameExist(UserProperty userProperty) {
+        DocumentReference userRef = firebaseDb.collection("users").document(userProperty.getUsername());
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -95,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this, "Username telah dipakai", Toast.LENGTH_SHORT).show();
                         etUsername.setText("");
                     } else {
-                        registerAccount(registerProperty);
+                        registerAccount(userProperty);
                     }
                 } else {
                     Log.d(TAG, "isUsernameExist: get failed with" + task.getException());
@@ -105,23 +106,24 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void registerAccount(RegisterProperty registerProperty) {
+    private void registerAccount(UserProperty userProperty) {
         Map<String, String> newUser = new HashMap<>();
-        newUser.put("username", registerProperty.getUsername());
-        newUser.put("full_name", registerProperty.getFullName());
-        newUser.put("email", registerProperty.getEmail());
+        newUser.put("username", userProperty.getUsername());
+        newUser.put("full_name", userProperty.getFullName());
+        newUser.put("email", userProperty.getEmail());
+        newUser.put("bio", userProperty.getUserBio());
 
-        firebaseAuth.createUserWithEmailAndPassword(registerProperty.getEmail(), registerProperty.getPassword())
+        firebaseAuth.createUserWithEmailAndPassword(userProperty.getEmail(), userProperty.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             UserProfileChangeRequest addDisplayName = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(registerProperty.getUsername())
+                                    .setDisplayName(userProperty.getUsername())
                                     .build();
 
-                            updateUsernameAndCompleteRegister(user, addDisplayName, registerProperty.getUsername(), newUser);
+                            updateUsernameAndCompleteRegister(user, addDisplayName, userProperty.getUsername(), newUser);
                         } else {
                             // Daftar akun gagal
                             if (task.getException() != null) {

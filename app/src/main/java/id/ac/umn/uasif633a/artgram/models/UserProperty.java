@@ -1,17 +1,28 @@
 package id.ac.umn.uasif633a.artgram.models;
 
-public class RegisterProperty {
+public class UserProperty {
     private String email;
     private String password;
     private String username;
     private String fullName;
+    private String userBio;
 
-    public RegisterProperty(String email, String password, String username, String fullName) {
+
+    public UserProperty(String email, String username, String fullName, String userBio) {
+        this.email = email;
+        this.username = username;
+        this.fullName = fullName;
+        this.userBio = userBio;
+    }
+
+    public UserProperty(String email, String password, String username, String fullName, String userBio) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.fullName = fullName;
+        this.userBio = userBio;
     }
+
 
     public String getEmail() {
         return email;
@@ -43,5 +54,13 @@ public class RegisterProperty {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getUserBio() {
+        return userBio;
+    }
+
+    public void setUserBio(String userBio) {
+        this.userBio = userBio;
     }
 }

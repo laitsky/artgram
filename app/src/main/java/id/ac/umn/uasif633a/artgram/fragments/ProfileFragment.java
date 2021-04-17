@@ -1,11 +1,14 @@
 package id.ac.umn.uasif633a.artgram.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,15 +19,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import id.ac.umn.uasif633a.artgram.R;
+import id.ac.umn.uasif633a.artgram.activities.EditProfileActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
+    private TextView tvFullName;
+    private TextView tvUsername;
+    private Button btnEditProfile;
     private FirebaseFirestore db;
     private FirebaseUser user;
     private ProfileDataReceiver profile;
-    String username;
+    private String username;
+    private String fullName;
+    private String userEmail;
+    private String userBio;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,16 +49,35 @@ public class ProfileFragment extends Fragment {
         super.onAttach(context);
         profile = (ProfileDataReceiver) context;
         username = profile.getUsername();
-        Log.d(TAG, "onAttach: getting username fragment... " + username);
+        fullName = profile.getFullName();
+        userEmail = profile.getUserEmail();
+        userBio = profile.getUserBio();
         ((MainActivity) getActivity()).getSupportActionBar().setTitle(username);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        // Inisialisasi View
+        tvFullName = (TextView) view.findViewById(R.id.fragment_profile_tv_display_name);
+        tvUsername = (TextView) view.findViewById(R.id.fragment_profile_tv_username);
+        btnEditProfile = (Button) view.findViewById(R.id.fragment_profile_btn_edit_profile);
 
+        tvFullName.setText(fullName);
+        tvUsername.setText(username);
+        btnEditProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                intent.putExtra("FULL_NAME", fullName);
+                intent.putExtra("USERNAME", username);
+                intent.putExtra("USER_EMAIL", userEmail);
+                intent.putExtra("USER_BIO", userBio);
+                startActivity(intent);
+            }
+        });
+        return view;
     }
 
     public ProfileFragment() {
