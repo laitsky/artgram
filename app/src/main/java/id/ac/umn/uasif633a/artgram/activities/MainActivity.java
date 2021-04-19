@@ -1,5 +1,6 @@
 package id.ac.umn.uasif633a.artgram.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -85,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                             break;
                         case R.id.nav_explore:
                             selectedFragment = new ExploreFragment();
+                            break;
+                        case R.id.nav_upload:
+                            selectedFragment = null;
+                            startActivity(new Intent(MainActivity.this, UploadActivity.class));
                             break;
                         case R.id.nav_profile:
                             selectedFragment = new ProfileFragment();
