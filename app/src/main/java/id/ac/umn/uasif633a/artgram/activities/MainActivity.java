@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.fragments.ExploreFragment;
 import id.ac.umn.uasif633a.artgram.fragments.HomeFragment;
+import id.ac.umn.uasif633a.artgram.fragments.PeopleListFragment;
 import id.ac.umn.uasif633a.artgram.fragments.ProfileFragment;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
@@ -87,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                             break;
                         case R.id.nav_profile:
                             selectedFragment = new ProfileFragment();
+                            break;
+                        case R.id.nav_people:
+                            selectedFragment = new PeopleListFragment();
                             break;
                         default:
                             selectedFragment = new HomeFragment();
