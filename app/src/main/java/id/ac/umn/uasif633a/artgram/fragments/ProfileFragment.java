@@ -14,10 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.activities.EditProfileActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
@@ -35,6 +41,7 @@ public class ProfileFragment extends Fragment {
     private String fullName;
     private String userEmail;
     private String userBio;
+    private CircleImageView profileImageView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +59,7 @@ public class ProfileFragment extends Fragment {
         fullName = profile.getFullName();
         userEmail = profile.getUserEmail();
         userBio = profile.getUserBio();
+
         ((MainActivity) getActivity()).getSupportActionBar().setTitle(username);
     }
 
@@ -63,9 +71,15 @@ public class ProfileFragment extends Fragment {
         tvFullName = (TextView) view.findViewById(R.id.fragment_profile_tv_display_name);
         tvUsername = (TextView) view.findViewById(R.id.fragment_profile_tv_username);
         btnEditProfile = (Button) view.findViewById(R.id.fragment_profile_btn_edit_profile);
+        profileImageView = (CircleImageView) view.findViewById(R.id.fragment_profile_iv_display_picture);
 
         tvFullName.setText(fullName);
         tvUsername.setText(username);
+        if(user.getPhotoUrl() != null) {
+            Glide.with(this)
+                    .load(user.getPhotoUrl())
+                    .into(profileImageView);
+        }
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,4 +97,5 @@ public class ProfileFragment extends Fragment {
     public ProfileFragment() {
         // Required empty public constructor
     }
+
 }
