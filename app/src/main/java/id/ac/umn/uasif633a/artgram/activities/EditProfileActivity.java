@@ -1,13 +1,17 @@
 package id.ac.umn.uasif633a.artgram.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,12 +21,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.models.UserProperty;
 
@@ -31,10 +42,15 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final String TAG = "EditProfileActivity";
     private FirebaseFirestore firebaseDb;
     private FirebaseUser user;
+    private DatabaseReference databaseReference;
     private Bundle extras;
     private EditText etFullName, etUsername, etEmail, etBio;
     private Button btnSaveEdit;
     private String fullName, username, userEmail, userBio, oldUsername;
+    private CircleImageView profileImageView;
+    private TextView profileChangeBtn;
+    private Uri imageUri;
+    private StorageReference storageProfilePicsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +60,16 @@ public class EditProfileActivity extends AppCompatActivity {
         // Inisialisasi instance Firebase
         firebaseDb = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        storageProfilePicsRef = FirebaseStorage.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         // Inisialisasi View
         etFullName = (EditText) findViewById(R.id.activity_edit_profile_et_full_name);
         etUsername = (EditText) findViewById(R.id.activity_edit_profile_et_username);
         etEmail = (EditText) findViewById(R.id.activity_edit_profile_et_email);
         etBio = (EditText) findViewById(R.id.activity_edit_profile_et_bio);
         btnSaveEdit = (Button) findViewById(R.id.activity_edit_profile_btn_save);
+        profileImageView = (CircleImageView) findViewById(R.id.activity_edit_profile_iv_display_picture);
+        profileChangeBtn = (TextView) findViewById(R.id.change_profile_btn);
 
         // Unpacking Bundles
         extras = getIntent().getExtras();
@@ -74,13 +94,59 @@ public class EditProfileActivity extends AppCompatActivity {
                 userEmail = etEmail.getText().toString();
                 userBio = etBio.getText().toString();
                 UserProperty userProperty = new UserProperty(userEmail, username, fullName, userBio);
+                databaseReference.child(user.getUid()).setValue(userProperty);
                 if (!oldUsername.equals(username)) {
                     hasUsernameChanged = true;
                 }
                 updateUserProfile(userProperty, hasUsernameChanged);
             }
         });
+
+        profileChangeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CropImage.activity().setAspectRatio(1, 1).start(EditProfileActivity.this);
+            }
+        });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            imageUri = result.getUri();
+            profileImageView.setImageURI(imageUri);
+            uploadProfileImage(imageUri);
+        } else {
+            Toast.makeText(this, "Error, Try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void uploadProfileImage(Uri imageUri) {
+
+        StorageReference profileRef = storageProfilePicsRef.child("users/" +user.getUid()+"/profile.jpg");
+
+        profileRef.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Log.d(TAG, "onSuccess: "+ uri);
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
 
     private void updateUserProfile(UserProperty userProperty, boolean hasUsernameChanged) {
         DocumentReference userRef;
@@ -103,6 +169,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(imageUri)
                 .setDisplayName(userProperty.getUsername())
                 .build();
 
