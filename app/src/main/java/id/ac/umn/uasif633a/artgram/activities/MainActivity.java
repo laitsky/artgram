@@ -1,5 +1,6 @@
 package id.ac.umn.uasif633a.artgram.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.fragments.ExploreFragment;
 import id.ac.umn.uasif633a.artgram.fragments.HomeFragment;
+import id.ac.umn.uasif633a.artgram.fragments.PeopleListFragment;
 import id.ac.umn.uasif633a.artgram.fragments.ProfileFragment;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
@@ -85,8 +87,15 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                         case R.id.nav_explore:
                             selectedFragment = new ExploreFragment();
                             break;
+                        case R.id.nav_upload:
+                            selectedFragment = null;
+                            startActivity(new Intent(MainActivity.this, UploadActivity.class));
+                            break;
                         case R.id.nav_profile:
                             selectedFragment = new ProfileFragment();
+                            break;
+                        case R.id.nav_people:
+                            selectedFragment = new PeopleListFragment();
                             break;
                         default:
                             selectedFragment = new HomeFragment();

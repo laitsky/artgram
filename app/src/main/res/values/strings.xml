@@ -10,5 +10,8 @@
 
     <string name="nav_home">Home</string>
     <string name="nav_explore">Explore</string>
+    <string name="nav_upload">Upload</string>
     <string name="nav_profile">Profile</string>
+    <string name="menu_profile_logout">Keluar</string>
+
 </resources>

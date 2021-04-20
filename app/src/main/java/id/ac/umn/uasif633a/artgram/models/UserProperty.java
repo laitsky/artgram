@@ -8,6 +8,12 @@ public class UserProperty {
     private String userBio;
 
 
+    public UserProperty(String email, String username, String fullName) {
+        this.email = email;
+        this.username = username;
+        this.fullName = fullName;
+    }
+
     public UserProperty(String email, String username, String fullName, String userBio) {
         this.email = email;
         this.username = username;
