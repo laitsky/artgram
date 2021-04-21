@@ -1,58 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragments.ProfileFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_profile_cl_profile_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="90dp">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="25dp"
+            app:srcCompat="@drawable/notification" />
+        <TextView
+            android:layout_width="230dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Username"
+            android:textSize="64px"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="25dp"
+            app:srcCompat="@drawable/menu" />
+    </LinearLayout>
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/fragment_profile_iv_display_picture"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="24dp"
-            android:src="@drawable/display_picture_placeholder"
-            app:civ_border_color="#756565"
-            app:civ_circle_background_color="#514A4A"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/fragment_profile_cv_image"
+            android:layout_width="120dp"
+            android:layout_height="115dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="60dp">
+            <ImageView
+                android:id="@+id/fragment_profile_iv_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/profile"
+                android:background="@color/white"
+                android:scaleType="centerCrop" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/fragment_profile_tv_display_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:text="Nama"
-            android:textSize="18sp"
-            app:layout_constraintStart_toEndOf="@+id/fragment_profile_iv_display_picture"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            android:id="@+id/fragment_profile_tv_fullName"
+            android:layout_width="match_parent"
+            android:layout_height="23dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/fragment_profile_cv_image"
+            android:text="Full Name"
+            android:textSize="48px"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
         <TextView
             android:id="@+id/fragment_profile_tv_username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="18dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5px"
+            android:layout_toRightOf="@+id/fragment_profile_cv_image"
+            android:layout_below="@+id/fragment_profile_tv_fullName"
             android:text="Username"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/fragment_profile_iv_display_picture"
-            app:layout_constraintTop_toBottomOf="@+id/fragment_profile_tv_display_name" />
+            android:textSize="36px"
+            android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/fragment_profile_btn_edit_profile"
+        <TextView
+            android:id="@+id/fragment_profile_tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/fragment_profile_cv_image"
+            android:layout_below="@+id/fragment_profile_tv_username"
+            android:text="Status Message"
+            android:textSize="36px"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/fragment_profile_tv_followingNumbers"
+            android:layout_width="35dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/fragment_profile_cv_image"
+            android:layout_below="@+id/fragment_profile_tv_status"
+            android:text="100"
+            android:textSize="36px"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+        <TextView
+            android:id="@+id/fragment_profile_tv_following"
+            android:layout_width="60dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/fragment_profile_tv_followingNumbers"
+            android:layout_below="@+id/fragment_profile_tv_status"
+            android:text="Following"
+            android:textSize="36px"
+            android:textColor="@color/blue"
+            android:clickable="true"
+            android:onClick="toFollowingPage" />
+
+        <TextView
+            android:id="@+id/fragment_profile_tv_followerNumbers"
+            android:layout_width="35dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/fragment_profile_tv_following"
+            android:layout_below="@+id/fragment_profile_tv_status"
+            android:text="500"
+            android:textSize="36px"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+        <TextView
+            android:id="@+id/fragment_profile_tv_follower"
+            android:layout_width="60dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/fragment_profile_tv_followerNumbers"
+            android:layout_below="@+id/fragment_profile_tv_status"
+            android:text="Followers"
+            android:textSize="36px"
+            android:textColor="@color/blue"
+            android:clickable="true"
+            android:onClick="toFollowersPage" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="440dp">
+        <TextView
+            android:id="@+id/fragment_profile_tv_gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/fragment_profile_iv_display_picture" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginTop="25px"
+            android:layout_marginLeft="250px"
+            android:text="Gallery"
+            android:textSize="42px"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+        <TextView
+            android:id="@+id/fragment_profile_tv_liked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25px"
+            android:layout_marginLeft="300px"
+            android:layout_toRightOf="@+id/fragment_profile_tv_gallery"
+            android:text="Liked"
+            android:textSize="42px"
+            android:textColor="@color/grey" />
+        <GridView
+            android:id="@+id/fragment_profile_gv_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/fragment_profile_tv_gallery"
+            android:numColumns="2"
+            android:verticalSpacing="10dp" />
+    </RelativeLayout>
+
 
 </LinearLayout>
