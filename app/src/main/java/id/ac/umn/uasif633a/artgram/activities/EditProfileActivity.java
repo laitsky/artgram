@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,7 +50,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private Button btnSaveEdit;
     private String fullName, username, userEmail, userBio, oldUsername;
     private CircleImageView profileImageView;
-    private TextView profileChangeBtn;
+    private LinearLayout profileChangeBtn;
     private Uri imageUri;
     private StorageReference storageProfilePicsRef;
 
@@ -69,7 +71,13 @@ public class EditProfileActivity extends AppCompatActivity {
         etBio = (EditText) findViewById(R.id.activity_edit_profile_et_bio);
         btnSaveEdit = (Button) findViewById(R.id.activity_edit_profile_btn_save);
         profileImageView = (CircleImageView) findViewById(R.id.activity_edit_profile_iv_display_picture);
-        profileChangeBtn = (TextView) findViewById(R.id.change_profile_btn);
+        profileChangeBtn = (LinearLayout) findViewById(R.id.activity_edit_profile_ll_image_profile);
+
+        if(user.getPhotoUrl() != null) {
+            Glide.with(this)
+                    .load(user.getPhotoUrl())
+                    .into(profileImageView);
+        }
 
         // Unpacking Bundles
         extras = getIntent().getExtras();
