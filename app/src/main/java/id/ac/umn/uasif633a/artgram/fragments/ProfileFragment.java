@@ -80,7 +80,7 @@ public class ProfileFragment extends Fragment {
 
         tvFullName.setText(fullName);
         tvUsername.setText(username);
-        if(user.getPhotoUrl() != null) {
+        if (user.getPhotoUrl() != null) {
             Glide.with(this)
                     .load(user.getPhotoUrl())
                     .into(profileImageView);
@@ -107,7 +107,7 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.playlist_menu_logout:
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
