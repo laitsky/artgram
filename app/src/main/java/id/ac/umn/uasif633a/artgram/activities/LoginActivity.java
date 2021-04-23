@@ -1,7 +1,9 @@
 package id.ac.umn.uasif633a.artgram.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,17 +26,21 @@ import id.ac.umn.uasif633a.artgram.R;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+    public static final String AUTH_USERNAME = "auth_username";
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firestore;
     private EditText etUsername, etPassword;
     private Button btnLogin;
     private String username, password, email;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String savedUsername = sharedPref.getString(AUTH_USERNAME, "");
         // Inisialisasi instance Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
@@ -44,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.activity_login_et_password);
         btnLogin = findViewById(R.id.activity_login_btn_login);
 
+        if (!(savedUsername.isEmpty())) {
+            etUsername.setText(savedUsername);
+        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
+                                                saveData(username);
                                                 Log.d(TAG, "onComplete: signinfirebaseauthsuccess " + username);
                                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                 startActivity(intent);
@@ -109,5 +119,11 @@ public class LoginActivity extends AppCompatActivity {
                         etPassword.setText("");
                     }
                 });
+    }
+
+    private void saveData(String username) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(AUTH_USERNAME, username);
+        editor.commit();
     }
 }
