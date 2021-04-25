@@ -21,6 +21,7 @@ import id.ac.umn.uasif633a.artgram.fragments.ExploreFragment;
 import id.ac.umn.uasif633a.artgram.fragments.HomeFragment;
 import id.ac.umn.uasif633a.artgram.fragments.PeopleListFragment;
 import id.ac.umn.uasif633a.artgram.fragments.ProfileFragment;
+import id.ac.umn.uasif633a.artgram.fragments.UploadFragment;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
 public class MainActivity extends AppCompatActivity implements ProfileDataReceiver {
@@ -88,8 +89,7 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                             selectedFragment = new ExploreFragment();
                             break;
                         case R.id.nav_upload:
-                            selectedFragment = null;
-                            startActivity(new Intent(MainActivity.this, UploadActivity.class));
+                            selectedFragment = new UploadFragment();
                             break;
                         case R.id.nav_profile:
                             selectedFragment = new ProfileFragment();
