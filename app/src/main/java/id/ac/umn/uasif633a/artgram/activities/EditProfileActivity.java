@@ -73,7 +73,7 @@ public class EditProfileActivity extends AppCompatActivity {
         profileImageView = (CircleImageView) findViewById(R.id.activity_edit_profile_iv_display_picture);
         profileChangeBtn = (LinearLayout) findViewById(R.id.activity_edit_profile_ll_image_profile);
 
-        if(user.getPhotoUrl() != null) {
+        if (user.getPhotoUrl() != null) {
             Glide.with(this)
                     .load(user.getPhotoUrl())
                     .into(profileImageView);
@@ -121,7 +121,7 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             imageUri = result.getUri();
             profileImageView.setImageURI(imageUri);
@@ -133,7 +133,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void uploadProfileImage(Uri imageUri) {
 
-        StorageReference profileRef = storageProfilePicsRef.child("users/" +user.getUid()+"/profile.jpg");
+        StorageReference profileRef = storageProfilePicsRef.child("users/" + user.getDisplayName());
 
         profileRef.putFile(imageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -142,7 +142,20 @@ public class EditProfileActivity extends AppCompatActivity {
                         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                Log.d(TAG, "onSuccess: "+ uri);
+                                Log.d(TAG, "firebase storage uri: " + uri);
+                                UserProfileChangeRequest updateDisplayPicture = new UserProfileChangeRequest.Builder()
+                                        .setPhotoUri(imageUri)
+                                        .build();
+
+                                user.updateProfile(updateDisplayPicture)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "onComplete: berhasil mengganti profile picture!");
+                                                }
+                                            }
+                                        });
                             }
                         });
                     }
@@ -177,7 +190,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setPhotoUri(imageUri)
                 .setDisplayName(userProperty.getUsername())
                 .build();
 
