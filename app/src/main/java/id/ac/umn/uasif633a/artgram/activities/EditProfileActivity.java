@@ -65,13 +65,13 @@ public class EditProfileActivity extends AppCompatActivity {
         storageProfilePicsRef = FirebaseStorage.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         // Inisialisasi View
-        etFullName = (EditText) findViewById(R.id.activity_edit_profile_et_full_name);
-        etUsername = (EditText) findViewById(R.id.activity_edit_profile_et_username);
-        etEmail = (EditText) findViewById(R.id.activity_edit_profile_et_email);
-        etBio = (EditText) findViewById(R.id.activity_edit_profile_et_bio);
-        btnSaveEdit = (Button) findViewById(R.id.activity_edit_profile_btn_save);
-        profileImageView = (CircleImageView) findViewById(R.id.activity_edit_profile_iv_display_picture);
-        profileChangeBtn = (LinearLayout) findViewById(R.id.activity_edit_profile_ll_image_profile);
+        etFullName = findViewById(R.id.activity_edit_profile_et_full_name);
+        etUsername = findViewById(R.id.activity_edit_profile_et_username);
+        etEmail = findViewById(R.id.activity_edit_profile_et_email);
+        etBio = findViewById(R.id.activity_edit_profile_et_bio);
+        btnSaveEdit = findViewById(R.id.activity_edit_profile_btn_save);
+        profileImageView = findViewById(R.id.activity_edit_profile_iv_display_picture);
+        profileChangeBtn = findViewById(R.id.activity_edit_profile_ll_image_profile);
 
         if (user.getPhotoUrl() != null) {
             Glide.with(this)
@@ -146,16 +146,8 @@ public class EditProfileActivity extends AppCompatActivity {
                                 UserProfileChangeRequest updateDisplayPicture = new UserProfileChangeRequest.Builder()
                                         .setPhotoUri(imageUri)
                                         .build();
-
-                                user.updateProfile(updateDisplayPicture)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "onComplete: berhasil mengganti profile picture!");
-                                                }
-                                            }
-                                        });
+                                DocumentReference userRef = firebaseDb.collection("users").document(username);
+                                updateDisplayPictureToFirestore(uri, updateDisplayPicture, userRef);
                             }
                         });
                     }
@@ -164,6 +156,30 @@ public class EditProfileActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private Task<Void> updateDisplayPictureToFirestore(Uri uri, UserProfileChangeRequest updateDisplayPicture, DocumentReference userRef) {
+        return userRef.update("display_picture", uri.toString())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: berhasil mengupdate firestore");
+                            user.updateProfile(updateDisplayPicture)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "onComplete: berhasil mengganti profile picture");
+                                                Toast.makeText(EditProfileActivity.this, "Berhasil memperbarui gambar profil!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Log.d(TAG, "onComplete: firebase update error " + task.getException());
+                        }
                     }
                 });
     }
