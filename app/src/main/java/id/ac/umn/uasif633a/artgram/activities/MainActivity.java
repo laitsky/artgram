@@ -21,7 +21,6 @@ import id.ac.umn.uasif633a.artgram.fragments.ExploreFragment;
 import id.ac.umn.uasif633a.artgram.fragments.HomeFragment;
 import id.ac.umn.uasif633a.artgram.fragments.PeopleListFragment;
 import id.ac.umn.uasif633a.artgram.fragments.ProfileFragment;
-import id.ac.umn.uasif633a.artgram.fragments.UploadFragment;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 
 public class MainActivity extends AppCompatActivity implements ProfileDataReceiver {
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selectedFragment;
+                    Fragment selectedFragment = null;
 
                     switch (item.getItemId()) {
                         case R.id.nav_home:
@@ -89,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                             selectedFragment = new ExploreFragment();
                             break;
                         case R.id.nav_upload:
-                            selectedFragment = new UploadFragment();
+                            Intent intent = new Intent(MainActivity.this, UploadActivity.class);
+                            startActivity(intent);
                             break;
                         case R.id.nav_profile:
                             selectedFragment = new ProfileFragment();
@@ -97,19 +97,19 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                         case R.id.nav_people:
                             selectedFragment = new PeopleListFragment();
                             break;
-                        default:
-                            selectedFragment = new HomeFragment();
                     }
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .setCustomAnimations(
-                                    R.anim.slide_in,
-                                    R.anim.fade_out,
-                                    R.anim.fade_in,
-                                    R.anim.slide_out
-                            )
-                            .replace(R.id.fragment_container, selectedFragment)
-                            .commit();
+                    if (selectedFragment != null) {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .setCustomAnimations(
+                                        R.anim.slide_in,
+                                        R.anim.fade_out,
+                                        R.anim.fade_in,
+                                        R.anim.slide_out
+                                )
+                                .replace(R.id.fragment_container, selectedFragment)
+                                .commit();
+                    }
 
                     return true;
                 }
