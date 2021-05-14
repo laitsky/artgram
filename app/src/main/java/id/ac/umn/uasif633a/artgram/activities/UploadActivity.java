@@ -19,41 +19,48 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import id.ac.umn.uasif633a.artgram.R;
 
 public class UploadActivity extends AppCompatActivity {
 
+    private FirebaseUser user;
+    private FirebaseFirestore db;
     Uri imageUri;
-    String myUrl = "";
+    String uploadedImageUrl = "";
     StorageTask uploadTask;
     StorageReference storageReference;
 
     ImageView close, image_added;
     TextView post;
-    EditText description;
+    EditText caption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
         close = findViewById(R.id.close);
         image_added = findViewById(R.id.image_added);
         post = findViewById(R.id.post);
-        description = findViewById(R.id.description);
+        caption = findViewById(R.id.description);
 
-        storageReference = FirebaseStorage.getInstance().getReference("posts");
+        storageReference = FirebaseStorage.getInstance().getReference("posts/" + user.getDisplayName());
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,22 +82,16 @@ public class UploadActivity extends AppCompatActivity {
                 .start(UploadActivity.this);
     }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(contentResolver.getType(uri));
-    }
-
     private void uploadImage() {
+        String postId = UUID.randomUUID().toString();
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Posting");
         progressDialog.show();
 
         if (imageUri != null) {
-            final StorageReference filereference = storageReference.child(System.currentTimeMillis()
-                    + "." + getFileExtension(imageUri));
+            final StorageReference fileReference = storageReference.child(postId);
 
-            uploadTask = filereference.putFile(imageUri);
+            uploadTask = fileReference.putFile(imageUri);
             uploadTask.continueWithTask(new Continuation() {
                 @Override
                 public Object then(@NonNull Task task) throws Exception {
@@ -98,29 +99,38 @@ public class UploadActivity extends AppCompatActivity {
                         throw task.getException();
                     }
 
-                    return filereference.getDownloadUrl();
+                    return fileReference.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
-                        myUrl = downloadUri.toString();
+                        uploadedImageUrl = downloadUri.toString();
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+                        HashMap<String, Object> newPost = new HashMap<>();
 
-                        String postid = reference.push().getKey();
+                        newPost.put("owner", user.getDisplayName());
+                        newPost.put("postId", postId);
+                        newPost.put("url", uploadedImageUrl);
+                        newPost.put("caption", caption.getText().toString());
+                        newPost.put("likes", 0);
 
-                        HashMap<String, Object> hashMap = new HashMap<>();
+                        db.collection("posts")
+                                .add(newPost)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        progressDialog.dismiss();
 
-                        hashMap.put("postid", postid);
-                        hashMap.put("postimage", myUrl);
-                        hashMap.put("description", description.getText().toString());
-                        hashMap.put("publisher", FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-                        reference.child(postid).setValue(hashMap);
-
-                        progressDialog.dismiss();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(UploadActivity.this, "Upload gagal", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
                         startActivity(new Intent(UploadActivity.this, MainActivity.class));
                         finish();
