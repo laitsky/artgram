@@ -18,22 +18,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.activities.EditProfileActivity;
 import id.ac.umn.uasif633a.artgram.activities.LoginActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
+import id.ac.umn.uasif633a.artgram.adapters.ProfileFeedsAdapter;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
+import id.ac.umn.uasif633a.artgram.models.Post;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
@@ -42,7 +50,9 @@ public class ProfileFragment extends Fragment {
     private Button btnEditProfile;
     private FirebaseFirestore db;
     private FirebaseUser user;
+    private Query myPosts;
     private ProfileDataReceiver profile;
+    private ArrayList<Post> userPosts = new ArrayList<>();
     private String username;
     private String fullName;
     private String userEmail;
@@ -55,6 +65,7 @@ public class ProfileFragment extends Fragment {
         // Inisialisasi instance Firebase
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        myPosts = db.collection("posts").whereEqualTo("owner", user.getDisplayName());
         setHasOptionsMenu(true);
     }
 
@@ -75,6 +86,8 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         // Inisialisasi View
+        getUserPosts();
+
         tvFullName = (TextView) view.findViewById(R.id.fragment_profile_tv_display_name);
         tvUsername = (TextView) view.findViewById(R.id.fragment_profile_tv_username);
         btnEditProfile = (Button) view.findViewById(R.id.fragment_profile_btn_edit_profile);
@@ -99,6 +112,32 @@ public class ProfileFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void getUserPosts() {
+        myPosts.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Post post = new Post(
+                                document.get("owner").toString(),
+                                document.get("postId").toString(),
+                                document.get("url").toString(),
+                                document.get("caption").toString(),
+                                Integer.parseInt(document.get("likes").toString(), 10)
+                        );
+                        userPosts.add(post);
+                    }
+                    RecyclerView profileFeedsRv = getActivity().findViewById(R.id.fragment_profile_rv_feeds);
+                    ProfileFeedsAdapter adapter = new ProfileFeedsAdapter(userPosts, getContext());
+                    profileFeedsRv.setAdapter(adapter);
+                    profileFeedsRv.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                } else {
+                    Log.d(TAG, "onComplete: error getting data");
+                }
+            }
+        });
     }
 
     @Override
