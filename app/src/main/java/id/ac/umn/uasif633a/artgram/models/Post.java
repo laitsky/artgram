@@ -1,6 +1,9 @@
 package id.ac.umn.uasif633a.artgram.models;
 
-public class Post {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Post implements Parcelable {
     private String owner;
     private String postId;
     private String url;
@@ -13,6 +16,40 @@ public class Post {
         this.url = url;
         this.caption = caption;
         this.likes = likes;
+    }
+
+    protected Post(Parcel in) {
+        owner = in.readString();
+        postId = in.readString();
+        url = in.readString();
+        caption = in.readString();
+        likes = in.readInt();
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(owner);
+        dest.writeString(postId);
+        dest.writeString(url);
+        dest.writeString(caption);
+        dest.writeInt(likes);
     }
 
     public String getOwner() {
@@ -54,4 +91,5 @@ public class Post {
     public void setLikes(int likes) {
         this.likes = likes;
     }
+
 }
