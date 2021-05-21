@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,6 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 import id.ac.umn.uasif633a.artgram.R;
+import id.ac.umn.uasif633a.artgram.adapters.PeopleListAdapter;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 import id.ac.umn.uasif633a.artgram.models.UserProperty;
 
@@ -58,16 +61,16 @@ public class PeopleListFragment extends Fragment {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         UserProperty user = new UserProperty(
-                                document.get("email").toString(),
                                 document.get("username").toString(),
-                                document.get("full_name").toString()
+                                document.get("full_name").toString(),
+                                document.get("display_picture").toString()
                         );
                         listOfUsers.add(user);
                     }
-                    Log.d(TAG, "onComplete: array populating done...");
-                    for (UserProperty user : listOfUsers) {
-                        Log.d(TAG, "getting fullname..." + user.getFullName());
-                    }
+                    RecyclerView peopleListRv = getActivity().findViewById(R.id.fragment_people_list_rv);
+                    PeopleListAdapter adapter = new PeopleListAdapter(listOfUsers, getContext());
+                    peopleListRv.setAdapter(adapter);
+                    peopleListRv.setLayoutManager(new LinearLayoutManager(getContext()));
                 } else {
                     Log.d(TAG, "onComplete: error..." + task.getException());
                 }

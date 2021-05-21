@@ -6,12 +6,12 @@ public class UserProperty {
     private String username;
     private String fullName;
     private String userBio;
+    private String dpUrl;
 
-
-    public UserProperty(String email, String username, String fullName) {
-        this.email = email;
+    public UserProperty(String username, String fullName, String dpUrl) {
         this.username = username;
         this.fullName = fullName;
+        this.dpUrl = dpUrl;
     }
 
     public UserProperty(String email, String username, String fullName, String userBio) {
@@ -68,5 +68,13 @@ public class UserProperty {
 
     public void setUserBio(String userBio) {
         this.userBio = userBio;
+    }
+
+    public String getDpUrl() {
+        return dpUrl;
+    }
+
+    public void setDpUrl(String dpUrl) {
+        this.dpUrl = dpUrl;
     }
 }
