@@ -112,6 +112,7 @@ public class RegisterActivity extends AppCompatActivity {
         newUser.put("full_name", userProperty.getFullName());
         newUser.put("email", userProperty.getEmail());
         newUser.put("bio", userProperty.getUserBio());
+        newUser.put("display_picture", "");
 
         firebaseAuth.createUserWithEmailAndPassword(userProperty.getEmail(), userProperty.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
