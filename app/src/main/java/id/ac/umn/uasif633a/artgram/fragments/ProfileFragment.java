@@ -20,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -41,7 +40,7 @@ import id.ac.umn.uasif633a.artgram.activities.EditProfileActivity;
 import id.ac.umn.uasif633a.artgram.activities.FollowActivity;
 import id.ac.umn.uasif633a.artgram.activities.LoginActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
-import id.ac.umn.uasif633a.artgram.adapters.ProfileFeedsAdapter;
+import id.ac.umn.uasif633a.artgram.adapters.PostsGridAdapter;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
@@ -152,7 +151,7 @@ public class ProfileFragment extends Fragment {
                         userPosts.add(post);
                     }
                     RecyclerView profileFeedsRv = getActivity().findViewById(R.id.fragment_profile_rv_feeds);
-                    ProfileFeedsAdapter adapter = new ProfileFeedsAdapter(userPosts, getContext());
+                    PostsGridAdapter adapter = new PostsGridAdapter(userPosts, getContext());
                     profileFeedsRv.setAdapter(adapter);
                     profileFeedsRv.setLayoutManager(new GridLayoutManager(getContext(), 2));
                 } else {

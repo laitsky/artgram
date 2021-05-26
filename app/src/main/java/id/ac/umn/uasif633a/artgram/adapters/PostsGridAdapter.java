@@ -25,13 +25,13 @@ import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.fragments.PostFragment;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
-public class ProfileFeedsAdapter extends RecyclerView.Adapter<ProfileFeedsAdapter.ViewHolder> {
+public class PostsGridAdapter extends RecyclerView.Adapter<PostsGridAdapter.ViewHolder> {
     private static final String TAG = "ProfileFeedsAdapter";
 
     private ArrayList<Post> posts;
     private Context context;
 
-    public ProfileFeedsAdapter(ArrayList<Post> posts, Context context) {
+    public PostsGridAdapter(ArrayList<Post> posts, Context context) {
         this.posts = posts;
         this.context = context;
     }
@@ -40,15 +40,15 @@ public class ProfileFeedsAdapter extends RecyclerView.Adapter<ProfileFeedsAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_grid_profile_feeds, parent, false);
+                .inflate(R.layout.layout_grid_posts, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (posts.get(position).getUrl() != null) {
+        if (posts.get(holder.getAdapterPosition()).getUrl() != null) {
             Glide.with(context)
-                    .load(posts.get(position).getUrl())
+                    .load(posts.get(holder.getAdapterPosition()).getUrl())
                     .into(holder.getImage());
         }
 
@@ -56,7 +56,7 @@ public class ProfileFeedsAdapter extends RecyclerView.Adapter<ProfileFeedsAdapte
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                String username = posts.get(position).getOwner();
+                String username = posts.get(holder.getAdapterPosition()).getOwner();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 DocumentReference dpRef = db.collection("users").document(username);
                 dpRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -72,7 +72,7 @@ public class ProfileFeedsAdapter extends RecyclerView.Adapter<ProfileFeedsAdapte
                                 }
                             }
                         }
-                        bundle.putParcelable("data", posts.get(position));
+                        bundle.putParcelable("data", posts.get(holder.getAdapterPosition()));
                         PostFragment postFragment = new PostFragment();
                         postFragment.setArguments(bundle);
                         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
