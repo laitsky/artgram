@@ -41,7 +41,6 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Insert your comment here..."
-            android:hintTextColor="#757575"
             android:inputType="textMultiLine"
             android:minHeight="48dp"
             tools:ignore="TextContrastCheck,TextContrastCheck" />
