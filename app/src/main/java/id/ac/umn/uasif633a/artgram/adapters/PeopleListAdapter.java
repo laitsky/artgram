@@ -1,6 +1,7 @@
 package id.ac.umn.uasif633a.artgram.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +14,41 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.models.UserProperty;
 
 public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.ViewHolder> {
+    private static final String TAG = "PeopleListAdapter";
     private ArrayList<UserProperty> users;
+    private ArrayList<UserProperty> ffuser;
     private Context context;
+    private String dpUrl, fullname;
+
+    private static FirebaseUser firebaseUser;
+    private static FirebaseFirestore db;
 
     public PeopleListAdapter(ArrayList<UserProperty> users, Context context) {
         this.users = users;
@@ -38,6 +65,10 @@ public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        final UserProperty user = users.get(position);
+
         if (users.get(holder.getAdapterPosition()).getDpUrl() != null || users.get(holder.getAdapterPosition()).getDpUrl().length() != 0) {
             Glide.with(context)
                     .load(users.get(holder.getAdapterPosition()).getDpUrl())
@@ -47,12 +78,147 @@ public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.Vi
                     .load(R.drawable.display_picture_placeholder)
                     .into(holder.getIvDisplayPicture());
         }
+        isFollowing(holder);
         holder.getTvUsername().setText(users.get(holder.getAdapterPosition()).getUsername());
         holder.getTvFullName().setText(users.get(holder.getAdapterPosition()).getFullName());
         holder.getBtnFollow().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, users.get(holder.getAdapterPosition()).getUsername(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, users.get(holder.getAdapterPosition()).getUsername(), Toast.LENGTH_SHORT).show();
+                updateUserFollowing(user, holder);
+            }
+        });
+    }
+
+    private void updateUserFollowing(UserProperty user, ViewHolder holder){
+
+        db = FirebaseFirestore.getInstance();
+        Map<String, Object> newFollowing = new HashMap<>();
+        newFollowing.put("username", user.getUsername());
+        newFollowing.put("display_picture", user.getDpUrl());
+        newFollowing.put("fullname", user.getFullName());
+
+        db.collection("users").document(firebaseUser.getDisplayName())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                                fullname = document.get("full_name").toString();
+                                dpUrl = document.get("display_picture").toString();
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
+        Map<String, Object> newFollowers = new HashMap<>();
+        newFollowers.put("username", firebaseUser.getDisplayName());
+        newFollowers.put("display_picture", dpUrl);
+        newFollowers.put("fullname", fullname);
+
+        if(holder.getBtnFollow().getText().toString().equalsIgnoreCase("follow")) {
+            db.collection("users").document(firebaseUser.getDisplayName())
+                    .collection("following")
+                    .document(user.getUsername())
+                    .set(newFollowing)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            holder.getBtnFollow().setText("Following");
+                            Toast.makeText(context, "Follow " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Gagal follow" + user.getUsername(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            db.collection("users").document(user.getUsername())
+                    .collection("followers")
+                    .document(firebaseUser.getDisplayName())
+                    .set(newFollowers)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.w(TAG, "followers " +user.getUsername()+": "+firebaseUser.getDisplayName());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+        } else {
+            db.collection("users").document(firebaseUser.getDisplayName())
+                    .collection("following")
+                    .document(user.getUsername())
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            holder.getBtnFollow().setText("Follow");
+                            Toast.makeText(context, "Unfollow " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error deleting document", e);
+                        }
+                    });
+            db.collection("users").document(user.getUsername())
+                    .collection("followers")
+                    .document(firebaseUser.getDisplayName())
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            holder.getBtnFollow().setText("Follow");
+                            Toast.makeText(context, "Unfollow " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error deleting document", e);
+                        }
+                    });
+
+        }
+    }
+
+    private void isFollowing(ViewHolder holder){
+        db = FirebaseFirestore.getInstance();
+
+        DocumentReference docRef = db.collection("users").document(firebaseUser.getDisplayName())
+                .collection("following")
+                .document(users.get(holder.getAdapterPosition()).getUsername());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        holder.getBtnFollow().setText("Following");
+                    } else {
+                        Log.d(TAG, "No such document");
+                        holder.getBtnFollow().setText("Follow");
+                    }
+                } else {
+                    Log.w(TAG, "Error getting documents.", task.getException());
+                }
             }
         });
     }

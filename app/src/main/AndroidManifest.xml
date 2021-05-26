@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Artgram">
+        <activity android:name=".activities.FollowActivity"></activity>
         <activity
             android:name=".activities.CommentDetailActivity"
             android:exported="true" />

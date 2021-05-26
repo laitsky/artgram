@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.activities.EditProfileActivity;
+import id.ac.umn.uasif633a.artgram.activities.FollowActivity;
 import id.ac.umn.uasif633a.artgram.activities.LoginActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
 import id.ac.umn.uasif633a.artgram.adapters.PostsGridAdapter;
@@ -57,6 +59,8 @@ public class ProfileFragment extends Fragment {
     private String userEmail;
     private String userBio;
     private CircleImageView profileImageView;
+    private TextView tvFollowing;
+    private TextView tvFollowers;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +95,8 @@ public class ProfileFragment extends Fragment {
         tvUsername = (TextView) view.findViewById(R.id.fragment_profile_tv_username);
         btnEditProfile = (Button) view.findViewById(R.id.fragment_profile_btn_edit_profile);
         profileImageView = (CircleImageView) view.findViewById(R.id.fragment_profile_iv_display_picture);
+        tvFollowing = (TextView) view.findViewById(R.id.fragment_profile_tv_following);
+        tvFollowers = (TextView) view.findViewById(R.id.fragment_profile_tv_followers);
 
         tvFullName.setText(fullName);
         tvUsername.setText(username);
@@ -107,6 +113,22 @@ public class ProfileFragment extends Fragment {
                 intent.putExtra("USERNAME", username);
                 intent.putExtra("USER_EMAIL", userEmail);
                 intent.putExtra("USER_BIO", userBio);
+                startActivity(intent);
+            }
+        });
+
+        tvFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FollowActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        tvFollowers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FollowActivity.class);
                 startActivity(intent);
             }
         });
