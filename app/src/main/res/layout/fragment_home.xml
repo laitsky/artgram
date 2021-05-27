@@ -40,9 +40,11 @@
 </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/post_item_rv"
+        android:id="@+id/fragment_home_rv_feeds"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/home_bar" />>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

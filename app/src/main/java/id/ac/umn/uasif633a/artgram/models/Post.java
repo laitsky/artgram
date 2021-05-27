@@ -8,6 +8,7 @@ public class Post implements Parcelable {
     private String postId;
     private String url;
     private String caption;
+    private String dpUrl;
     private int likes;
 
     public Post(String owner, String postId, String url, String caption, int likes) {
@@ -82,6 +83,18 @@ public class Post implements Parcelable {
 
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    public String getDpUrl() {
+        return dpUrl;
+    }
+
+    public void setDpUrl(String dpUrl) {
+        this.dpUrl = dpUrl;
+    }
+
+    public static Creator<Post> getCREATOR() {
+        return CREATOR;
     }
 
     public int getLikes() {

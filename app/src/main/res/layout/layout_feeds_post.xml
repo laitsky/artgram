@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.PostFragment">
+    android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/fragment_post_iv_display_picture"
+        android:id="@+id/layout_feeds_post_iv_display_picture"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
@@ -17,65 +15,55 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/fragment_post_tv_username"
+        android:id="@+id/layout_feeds_post_tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="34dp"
         android:text="Username"
-        app:layout_constraintStart_toEndOf="@+id/fragment_post_iv_display_picture"
+        app:layout_constraintStart_toEndOf="@+id/layout_feeds_post_iv_display_picture"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/fragment_post_iv_image"
+        android:id="@+id/layout_feeds_post_iv_image"
         android:layout_width="330dp"
         android:layout_height="290dp"
         android:layout_marginTop="84dp"
+        android:contentDescription="User's Post"
         android:src="@drawable/ic_launcher_background"
-        android:contentDescription="User Post"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/fragment_post_tv_count_likes"
+        android:id="@+id/layout_feeds_post_tv_count_likes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="322dp"
         android:text="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_post_iv_display_picture" />
+        app:layout_constraintTop_toBottomOf="@+id/layout_feeds_post_iv_display_picture" />
 
     <TextView
-        android:id="@+id/fragment_post_tv_likes"
+        android:id="@+id/layout_feeds_post_tv_likes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="300dp"
         android:text="likes"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fragment_post_tv_count_likes"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_post_iv_image" />
+        app:layout_constraintStart_toEndOf="@+id/layout_feeds_post_tv_count_likes"
+        app:layout_constraintTop_toBottomOf="@+id/layout_feeds_post_iv_image" />
 
     <TextView
-        android:id="@+id/fragment_post_tv_caption"
+        android:id="@+id/layout_feeds_post_tv_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:text="Caption"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_post_tv_likes" />
-
-    <Button
-        android:id="@+id/fragment_post_btn_comments"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="View Comments"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/layout_feeds_post_tv_likes" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
