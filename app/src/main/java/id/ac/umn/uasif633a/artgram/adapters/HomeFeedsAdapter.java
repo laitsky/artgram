@@ -1,6 +1,7 @@
 package id.ac.umn.uasif633a.artgram.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import id.ac.umn.uasif633a.artgram.R;
+import id.ac.umn.uasif633a.artgram.activities.CommentDetailActivity;
+import id.ac.umn.uasif633a.artgram.activities.MainActivity;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
 public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.ViewHolder> {
@@ -51,6 +54,15 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
         }
 
         holder.getTvCaption().setText(posts.get(holder.getAdapterPosition()).getCaption());
+
+        holder.getIvComments().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, CommentDetailActivity.class);
+                intent.putExtra("postId", posts.get(holder.getAdapterPosition()).getPostId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -62,6 +74,7 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
         private ImageView ivPostImage;
         private TextView tvCountLikes;
         private TextView tvCaption;
+        private ImageView ivComments;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -70,6 +83,7 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
             ivPostImage = itemView.findViewById(R.id.layout_feeds_post_iv_image);
             tvCountLikes = itemView.findViewById(R.id.layout_feeds_post_tv_count_likes);
             tvCaption = itemView.findViewById(R.id.layout_feeds_post_tv_caption);
+            ivComments = itemView.findViewById(R.id.layout_feeds_post_iv_comments);
         }
 
         public ImageView getIvDisplayPicture() {
@@ -90,6 +104,10 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
 
         public TextView getTvCaption() {
             return tvCaption;
+        }
+
+        public ImageView getIvComments() {
+            return ivComments;
         }
     }
 }
