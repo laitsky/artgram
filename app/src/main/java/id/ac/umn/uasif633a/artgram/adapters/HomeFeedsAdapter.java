@@ -12,6 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -19,12 +25,14 @@ import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.activities.CommentDetailActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
 import id.ac.umn.uasif633a.artgram.models.Post;
+import id.ac.umn.uasif633a.artgram.models.UserProperty;
 
 public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.ViewHolder> {
     private static final String TAG = "HomeFeedsAdapter";
 
     private ArrayList<Post> posts;
     private Context context;
+
 
     public HomeFeedsAdapter(ArrayList<Post> posts, Context context) {
         this.posts = posts;
@@ -41,9 +49,7 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context)
-                .load(R.drawable.display_picture_placeholder)
-                .into(holder.getIvDisplayPicture());
+        Post post = posts.get(position);
 
         holder.getTvUsername().setText(posts.get(holder.getAdapterPosition()).getOwner());
 
@@ -55,6 +61,8 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
 
         holder.getTvCaption().setText(posts.get(holder.getAdapterPosition()).getCaption());
 
+        ownerInfo(holder.ivDisplayPicture, post.getOwner());
+
         holder.getIvComments().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +73,27 @@ public class HomeFeedsAdapter extends RecyclerView.Adapter<HomeFeedsAdapter.View
         });
     }
 
+    private  void ownerInfo(final ImageView ivDisplayPicture, final String tvUsername) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Query query = db.collection("users").whereEqualTo("username", tvUsername);
+
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        UserProperty user = new UserProperty(
+                                document.get("username").toString(),
+                                document.get("full_name").toString(),
+                                document.get("display_picture").toString()
+                        );
+                        Glide.with(context).load(user.getDpUrl()).into(ivDisplayPicture);
+                    }
+                }
+            }
+        });
+    }
     @Override
     public int getItemCount() { return posts.size(); }
 
