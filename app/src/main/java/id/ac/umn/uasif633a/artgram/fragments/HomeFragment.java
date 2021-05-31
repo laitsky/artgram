@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,6 +38,7 @@ public class HomeFragment extends Fragment {
     private CollectionReference followingRef;
     private ArrayList<String> listOfFollowing = new ArrayList<>();
     private ArrayList<Post> listOfPosts = new ArrayList<>();
+    private TextView tvEmptyText;
 
     public HomeFragment() {
     }
@@ -60,7 +63,10 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        tvEmptyText = view.findViewById(R.id.fragment_home_tv_empty_text);
+        return view;
     }
 
     private void getUserFeeds() {
@@ -71,31 +77,37 @@ public class HomeFragment extends Fragment {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         listOfFollowing.add(document.getString("username"));
                     }
-
-                    CollectionReference postsRef = db.collection("posts");
-                    postsRef.whereIn("owner", listOfFollowing)
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            Post post = new Post(
-                                                    document.getString("owner"),
-                                                    document.getString("postId"),
-                                                    document.getString("url"),
-                                                    document.getString("caption"),
-                                                    Integer.parseInt(document.get("likes").toString(), 10)
-                                            );
-                                            listOfPosts.add(post);
+                    
+                    if (!listOfFollowing.isEmpty()) {
+                        CollectionReference postsRef = db.collection("posts");
+                        postsRef.whereIn("owner", listOfFollowing)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            tvEmptyText.setVisibility(View.INVISIBLE);
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                Post post = new Post(
+                                                        document.getString("owner"),
+                                                        document.getString("postId"),
+                                                        document.getString("url"),
+                                                        document.getString("caption"),
+                                                        Integer.parseInt(document.get("likes").toString(), 10)
+                                                );
+                                                listOfPosts.add(post);
+                                            }
+                                            RecyclerView homeFeedsRv = getActivity().findViewById(R.id.fragment_home_rv_feeds);
+                                            HomeFeedsAdapter adapter = new HomeFeedsAdapter(listOfPosts, getContext());
+                                            homeFeedsRv.setAdapter(adapter);
+                                            homeFeedsRv.setLayoutManager(new LinearLayoutManager(getContext()));
                                         }
-                                        RecyclerView homeFeedsRv = getActivity().findViewById(R.id.fragment_home_rv_feeds);
-                                        HomeFeedsAdapter adapter = new HomeFeedsAdapter(listOfPosts, getContext());
-                                        homeFeedsRv.setAdapter(adapter);
-                                        homeFeedsRv.setLayoutManager(new LinearLayoutManager(getContext()));
                                     }
-                                }
-                            });
+                                });
+                    } else {
+                        tvEmptyText.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "onComplete: no feeds data");
+                    }
                 }
             }
         });
