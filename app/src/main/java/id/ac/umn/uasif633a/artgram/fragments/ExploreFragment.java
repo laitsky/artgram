@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
-import id.ac.umn.uasif633a.artgram.adapters.PostsGridAdapter;
+import id.ac.umn.uasif633a.artgram.adapters.ExploreGridAdapter;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
 public class ExploreFragment extends Fragment {
@@ -79,7 +79,7 @@ public class ExploreFragment extends Fragment {
                         listOfPosts.add(post);
                     };
                     RecyclerView exploreRv = getActivity().findViewById(R.id.fragment_explore_rv);
-                    PostsGridAdapter adapter = new PostsGridAdapter(listOfPosts, getContext());
+                    ExploreGridAdapter adapter = new ExploreGridAdapter(listOfPosts, getContext());
                     exploreRv.setAdapter(adapter);
                     exploreRv.setLayoutManager(new GridLayoutManager(getContext(), 3));
                 } else {

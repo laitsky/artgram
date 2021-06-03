@@ -16,6 +16,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        getSupportActionBar().hide();
 
         // Inisialisasi Button pada UI
         btnLogin = findViewById(R.id.activity_main_page_btn_login);

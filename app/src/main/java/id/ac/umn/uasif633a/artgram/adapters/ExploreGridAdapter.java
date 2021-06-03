@@ -25,13 +25,13 @@ import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.fragments.PostFragment;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
-public class PostsGridAdapter extends RecyclerView.Adapter<PostsGridAdapter.ViewHolder> {
+public class ExploreGridAdapter extends RecyclerView.Adapter<ExploreGridAdapter.ViewHolder> {
     private static final String TAG = "ProfileFeedsAdapter";
 
     private ArrayList<Post> posts;
     private Context context;
 
-    public PostsGridAdapter(ArrayList<Post> posts, Context context) {
+    public ExploreGridAdapter(ArrayList<Post> posts, Context context) {
         this.posts = posts;
         this.context = context;
     }
@@ -40,7 +40,7 @@ public class PostsGridAdapter extends RecyclerView.Adapter<PostsGridAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_grid_posts, parent, false);
+                .inflate(R.layout.layout_explore_posts, parent, false);
         return new ViewHolder(view);
     }
 

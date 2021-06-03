@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +39,7 @@ import id.ac.umn.uasif633a.artgram.activities.EditProfileActivity;
 import id.ac.umn.uasif633a.artgram.activities.FollowActivity;
 import id.ac.umn.uasif633a.artgram.activities.LoginActivity;
 import id.ac.umn.uasif633a.artgram.activities.MainActivity;
-import id.ac.umn.uasif633a.artgram.adapters.PostsGridAdapter;
+import id.ac.umn.uasif633a.artgram.adapters.ProfileGridAdapter;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
@@ -151,7 +150,7 @@ public class ProfileFragment extends Fragment {
                         userPosts.add(post);
                     }
                     RecyclerView profileFeedsRv = getActivity().findViewById(R.id.fragment_profile_rv_feeds);
-                    PostsGridAdapter adapter = new PostsGridAdapter(userPosts, getContext());
+                    ProfileGridAdapter adapter = new ProfileGridAdapter(userPosts, getContext());
                     profileFeedsRv.setAdapter(adapter);
                     profileFeedsRv.setLayoutManager(new GridLayoutManager(getContext(), 2));
                 } else {

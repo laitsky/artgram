@@ -5,8 +5,7 @@
     android:id="@+id/fragment_people_list_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.PeopleListFragment"
-    >
+    tools:context=".fragments.PeopleListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_people_list_rv"

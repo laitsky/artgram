@@ -42,6 +42,6 @@
         android:layout_toRightOf="@+id/activity_follow_image_tv_name"
         android:text="Following"
         android:textSize="26px"
-        android:background="@drawable/rounded_corners"/>
+        android:background="@drawable/button_background"/>
 
 </RelativeLayout>
