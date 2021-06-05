@@ -3,6 +3,7 @@ package id.ac.umn.uasif633a.artgram.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private String email, password, username, fullName;
     private String userBio = "";
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDb = FirebaseFirestore.getInstance();
 
+        progressDialog = new ProgressDialog(this);
         // Inisialisasi komponen UI
         etEmail = findViewById(R.id.activity_register_et_email);
         etPassword = findViewById(R.id.activity_register_et_password);
@@ -69,6 +72,8 @@ public class RegisterActivity extends AppCompatActivity {
                         || fullName.equals("")) {
                     Toast.makeText(RegisterActivity.this, "Lengkapi data kamu!", Toast.LENGTH_SHORT).show();
                 } else {
+                    progressDialog.setMessage("Please wait");
+                    progressDialog.show();
                     isUsernameExist(userProperty);
                     //RegisterActivity.this.registerAccount(email, password, username, fullName);
                 }
@@ -94,12 +99,14 @@ public class RegisterActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        progressDialog.dismiss();
                         Toast.makeText(RegisterActivity.this, "Username telah dipakai", Toast.LENGTH_SHORT).show();
                         etUsername.setText("");
                     } else {
                         registerAccount(userProperty);
                     }
                 } else {
+                    progressDialog.dismiss();
                     Log.d(TAG, "isUsernameExist: get failed with" + task.getException());
                 }
             }
@@ -129,6 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                         } else {
                             // Daftar akun gagal
                             if (task.getException() != null) {
+                                progressDialog.dismiss();
                                 Log.w(TAG, "gagal mendaftarkan akun", task.getException());
                                 Toast.makeText(RegisterActivity.this, task.getException().getLocalizedMessage(),
                                         Toast.LENGTH_SHORT).show();
@@ -157,6 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             // Daftar akun berhasil
+                                            progressDialog.dismiss();
                                             Log.d(TAG, "berhasil mendaftarkan akun");
                                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                             RegisterActivity.this.startActivity(intent);
@@ -165,6 +174,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
+                                            progressDialog.dismiss();
                                             Log.e(TAG, "error menambahkan data ke koleksi", e);
                                             Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }

@@ -1,5 +1,6 @@
 package id.ac.umn.uasif633a.artgram.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private String username, password, email;
     private SharedPreferences sharedPref;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
+        progressDialog = new ProgressDialog(this);
         // Inisialisasi komponen UI
         etUsername = findViewById(R.id.activity_login_et_username);
         etPassword = findViewById(R.id.activity_login_et_password);
@@ -63,6 +66,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (username.equals("") || password.equals("")) {
                     Toast.makeText(LoginActivity.this, "Data login tidak lengkap!", Toast.LENGTH_SHORT).show();
                 } else {
+                    progressDialog.setMessage("Please wait");
+                    progressDialog.show();
                     login(username, password);
                 }
             }
@@ -92,11 +97,13 @@ public class LoginActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 saveData(username);
                                                 Log.d(TAG, "onComplete: signinfirebaseauthsuccess " + username);
+                                                progressDialog.dismiss();
                                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                 startActivity(intent);
                                                 finish();
                                             } else {
                                                 // Login gagal
+                                                progressDialog.dismiss();
                                                 etPassword.setText("");
                                                 Toast.makeText(LoginActivity.this, "Password yang kamu masukkan salah!",
                                                         Toast.LENGTH_SHORT).show();
@@ -105,6 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                                     });
 
                         } catch (NullPointerException e) {
+                            progressDialog.dismiss();
                             Toast.makeText(LoginActivity.this, "Akun tidak ditemukan!",
                                     Toast.LENGTH_SHORT).show();
                             etUsername.setText("");
@@ -115,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
                         Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         etUsername.setText("");
                         etPassword.setText("");
