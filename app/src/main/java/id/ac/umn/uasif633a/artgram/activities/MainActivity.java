@@ -2,8 +2,10 @@ package id.ac.umn.uasif633a.artgram.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
     private String username;
     private String userEmail;
     private String userBio;
+    private boolean doubleBackToExisPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +117,24 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                     return true;
                 }
             };
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExisPressedOnce || getSupportFragmentManager().getBackStackEntryCount() != 0) {
+            finishAndRemoveTask();
+            return;
+        }
+
+        this.doubleBackToExisPressedOnce = true;
+        Toast.makeText(getApplicationContext(), "Please click BACK once again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExisPressedOnce = false;
+            }
+        }, 2000);
+    }
 
     @Override
     public String getUsername() {
