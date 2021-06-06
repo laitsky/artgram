@@ -69,7 +69,7 @@ public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.Vi
 
         final UserProperty user = users.get(position);
 
-        if (users.get(holder.getAdapterPosition()).getDpUrl() != null || users.get(holder.getAdapterPosition()).getDpUrl().length() != 0) {
+        if (users.get(holder.getAdapterPosition()).getDpUrl().length() != 0) {
             Glide.with(context)
                     .load(users.get(holder.getAdapterPosition()).getDpUrl())
                     .into(holder.getIvDisplayPicture());
