@@ -20,8 +20,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 
 import id.ac.umn.uasif633a.artgram.R;
 import id.ac.umn.uasif633a.artgram.adapters.CommentListAdapter;
-import id.ac.umn.uasif633a.artgram.adapters.PeopleListAdapter;
 import id.ac.umn.uasif633a.artgram.models.Comment;
 
 public class CommentDetailActivity extends AppCompatActivity {
@@ -43,12 +40,14 @@ public class CommentDetailActivity extends AppCompatActivity {
     private Button btnPostComment;
     private String postId;
     private String documentId;
+    private RecyclerView commentListRv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_detail);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        commentListRv = findViewById(R.id.activity_comment_detail_rv_comment_list);
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
         etCommentInput = (EditText) findViewById(R.id.activity_comment_detail_et_input_comment);
@@ -96,6 +95,11 @@ public class CommentDetailActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                        int oldItemListCounts = listOfComments.size();
+                        if (oldItemListCounts != 0) {
+                            listOfComments.add(comment);
+                            commentListRv.getAdapter().notifyItemInserted(oldItemListCounts + 1);
+                        }
                         etCommentInput.setText("");
                         progressDialog.dismiss();
                     }
@@ -104,7 +108,6 @@ public class CommentDetailActivity extends AppCompatActivity {
 
     private void getAllComment() {
         Query query = db.collection("comments").whereEqualTo("postId", postId);
-
 
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -118,7 +121,6 @@ public class CommentDetailActivity extends AppCompatActivity {
                             );
                             listOfComments.add(comment);
                         }
-                        RecyclerView commentListRv = findViewById(R.id.activity_comment_detail_rv_comment_list);
                         CommentListAdapter adapter = new CommentListAdapter(listOfComments, getApplicationContext());
                         commentListRv.setAdapter(adapter);
                         commentListRv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
