@@ -79,9 +79,10 @@
             android:id="@+id/fragment_profile_btn_edit_profile"
             android:layout_width="140dp"
             android:layout_height="38dp"
-            android:text="Edit Profile"
             android:layout_marginStart="35dp"
             android:backgroundTint="@color/black"
+            android:text="Edit Profile"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/fragment_profile_iv_display_picture" />
     </androidx.constraintlayout.widget.ConstraintLayout>

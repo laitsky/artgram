@@ -10,11 +10,11 @@
         android:id="@+id/activity_main_page_logo"
         android:layout_width="280dp"
         android:layout_height="150dp"
-        android:src="@drawable/artgram"
         android:layout_marginBottom="60dp"
+        android:src="@drawable/artgram"
         app:layout_constraintBottom_toBottomOf="@id/activity_login_et_username"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/activity_login_et_username"
@@ -43,14 +43,11 @@
 
     <Button
         android:id="@+id/activity_login_btn_login"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/red_blue_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="80dp"
         android:text="@string/login"
-        app:strokeColor="#000000"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

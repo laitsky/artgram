@@ -167,7 +167,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Save"
-        android:backgroundTint="@color/black"
+        style="@style/red_blue_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_edit_profile_ll_bio_container" />
