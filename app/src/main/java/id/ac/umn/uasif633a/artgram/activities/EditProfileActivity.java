@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,13 +44,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseDb;
     private FirebaseUser user;
     private DatabaseReference databaseReference;
-    private Bundle extras;
     private EditText etFullName, etUsername, etEmail, etBio;
-    private Button btnSaveEdit;
-    private String fullName, username, userEmail, userBio, oldUsername;
-    private CircleImageView profileImageView;
-    private LinearLayout profileChangeBtn;
-    private Uri imageUri;
+    private String fullName, username, userEmail, userBio, oldUsername, userDpUrl;
+    private CircleImageView ivDisplayPicture;
     private StorageReference storageProfilePicsRef;
 
     @Override
@@ -70,28 +65,33 @@ public class EditProfileActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.activity_edit_profile_et_username);
         etEmail = findViewById(R.id.activity_edit_profile_et_email);
         etBio = findViewById(R.id.activity_edit_profile_et_bio);
-        btnSaveEdit = findViewById(R.id.activity_edit_profile_btn_save);
-        profileImageView = findViewById(R.id.activity_edit_profile_iv_display_picture);
-        profileChangeBtn = findViewById(R.id.activity_edit_profile_ll_image_profile);
-
-        if (user.getPhotoUrl() != null) {
-            Glide.with(this)
-                    .load(user.getPhotoUrl())
-                    .into(profileImageView);
-        }
+        Button btnSaveEdit = findViewById(R.id.activity_edit_profile_btn_save);
+        ivDisplayPicture = findViewById(R.id.activity_edit_profile_iv_display_picture);
+        LinearLayout profileChangeBtn = findViewById(R.id.activity_edit_profile_ll_image_profile);
 
         // Unpacking Bundles
-        extras = getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
         if (extras != null) {
             fullName = extras.getString("FULL_NAME");
             username = extras.getString("USERNAME");
             oldUsername = extras.getString("USERNAME");
             userEmail = extras.getString("USER_EMAIL");
             userBio = extras.getString("USER_BIO");
+            userDpUrl = extras.getString("USER_DP_URL");
             etFullName.setText(fullName);
             etUsername.setText(username);
             etEmail.setText(userEmail);
             etBio.setText(userBio);
+        }
+
+        if (user.getPhotoUrl() != null) {
+            Glide.with(this)
+                    .load(userDpUrl)
+                    .into(ivDisplayPicture);
+        } else {
+            Glide.with(this)
+                    .load(R.drawable.display_picture_placeholder)
+                    .into(ivDisplayPicture);
         }
 
         btnSaveEdit.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +124,8 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            imageUri = result.getUri();
-            profileImageView.setImageURI(imageUri);
+            Uri imageUri = result.getUri();
+            ivDisplayPicture.setImageURI(imageUri);
             uploadProfileImage(imageUri);
         } else {
             Toast.makeText(this, "Error, Try again", Toast.LENGTH_SHORT).show();
@@ -161,8 +161,8 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
     }
 
-    private Task<Void> updateDisplayPictureToFirestore(Uri uri, UserProfileChangeRequest updateDisplayPicture, DocumentReference userRef) {
-        return userRef.update("display_picture", uri.toString())
+    private void updateDisplayPictureToFirestore(Uri uri, UserProfileChangeRequest updateDisplayPicture, DocumentReference userRef) {
+        userRef.update("display_picture", uri.toString())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

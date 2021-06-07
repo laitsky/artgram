@@ -5,4 +5,5 @@ public interface ProfileDataReceiver {
     String getUsername();
     String getUserEmail();
     String getUserBio();
+    String getUserDpUrl();
 }

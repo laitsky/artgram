@@ -57,7 +57,8 @@ public class ProfileFragment extends Fragment {
     private String fullName;
     private String userEmail;
     private String userBio;
-    private CircleImageView profileImageView;
+    private String userDpUrl;
+    private CircleImageView ivDisplayPicture;
     private TextView tvFollowing;
     private TextView tvFollowers;
     private boolean following;
@@ -75,11 +76,13 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+
         profile = (ProfileDataReceiver) context;
         username = profile.getUsername();
         fullName = profile.getFullName();
         userEmail = profile.getUserEmail();
         userBio = profile.getUserBio();
+        userDpUrl = profile.getUserDpUrl();
 
         ((MainActivity) getActivity()).getSupportActionBar().setTitle(username);
     }
@@ -94,7 +97,7 @@ public class ProfileFragment extends Fragment {
         tvFullName = (TextView) view.findViewById(R.id.fragment_profile_tv_display_name);
         tvUsername = (TextView) view.findViewById(R.id.fragment_profile_tv_username);
         btnEditProfile = (Button) view.findViewById(R.id.fragment_profile_btn_edit_profile);
-        profileImageView = (CircleImageView) view.findViewById(R.id.fragment_profile_iv_display_picture);
+        ivDisplayPicture = (CircleImageView) view.findViewById(R.id.fragment_profile_iv_display_picture);
         tvFollowing = (TextView) view.findViewById(R.id.fragment_profile_tv_following);
         tvFollowers = (TextView) view.findViewById(R.id.fragment_profile_tv_followers);
 
@@ -102,8 +105,12 @@ public class ProfileFragment extends Fragment {
         tvUsername.setText(username);
         if (user.getPhotoUrl() != null) {
             Glide.with(this)
-                    .load(user.getPhotoUrl())
-                    .into(profileImageView);
+                    .load(userDpUrl)
+                    .into(ivDisplayPicture);
+        } else {
+            Glide.with(this)
+                    .load(R.drawable.display_picture_placeholder)
+                    .into(ivDisplayPicture);
         }
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +120,7 @@ public class ProfileFragment extends Fragment {
                 intent.putExtra("USERNAME", username);
                 intent.putExtra("USER_EMAIL", userEmail);
                 intent.putExtra("USER_BIO", userBio);
+                intent.putExtra("USER_DP_URL", userDpUrl);
                 startActivity(intent);
             }
         });

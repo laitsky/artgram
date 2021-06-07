@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
     private String username;
     private String userEmail;
     private String userBio;
+    private String userDpUrl;
     private boolean doubleBackToExisPressedOnce = false;
 
     @Override
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
                         if (documentSnapshot != null) {
                             fullName = documentSnapshot.get("full_name").toString();
                             userBio = documentSnapshot.get("bio").toString();
-                            Log.d(TAG, "onSuccess: getting user bio..." + userBio);
+                            userDpUrl = documentSnapshot.getString("display_picture");
                         }
                     }
                 });
@@ -154,5 +155,10 @@ public class MainActivity extends AppCompatActivity implements ProfileDataReceiv
     @Override
     public String getUserBio() {
         return userBio;
+    }
+
+    @Override
+    public String getUserDpUrl() {
+        return userDpUrl;
     }
 }
