@@ -1,5 +1,6 @@
 package id.ac.umn.uasif633a.artgram.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private String fullName, username, userEmail, userBio, oldUsername, userDpUrl;
     private CircleImageView ivDisplayPicture;
     private StorageReference storageProfilePicsRef;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,8 @@ public class EditProfileActivity extends AppCompatActivity {
         ivDisplayPicture = findViewById(R.id.activity_edit_profile_iv_display_picture);
         LinearLayout profileChangeBtn = findViewById(R.id.activity_edit_profile_ll_image_profile);
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait");
         // Unpacking Bundles
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -97,6 +101,7 @@ public class EditProfileActivity extends AppCompatActivity {
         btnSaveEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
                 boolean hasUsernameChanged = false;
                 fullName = etFullName.getText().toString();
                 username = etUsername.getText().toString();
@@ -133,7 +138,6 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void uploadProfileImage(Uri imageUri) {
-
         StorageReference profileRef = storageProfilePicsRef.child("users/" + user.getDisplayName());
 
         profileRef.putFile(imageUri)
@@ -249,6 +253,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d(TAG, "onComplete: berhasil menghapus dokumen lama");
+                                                progressDialog.dismiss();
                                                 Intent intent = new Intent(EditProfileActivity.this, MainActivity.class);
                                                 startActivity(intent);
                                             } else {
@@ -259,6 +264,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
+                                            progressDialog.dismiss();
                                             Log.d(TAG, "onFailure: kesalahan terjadi", e);
                                         }
                                     });
@@ -272,6 +278,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "onSuccess: whole profile data successfully updated");
+                            progressDialog.dismiss();
                             Intent intent = new Intent(EditProfileActivity.this, MainActivity.class);
                             startActivity(intent);
                         }
@@ -279,6 +286,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
                             Log.d(TAG, "onFailure: error updating document", e);
                         }
                     });
