@@ -63,8 +63,8 @@ public class FollowersFragment extends Fragment {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         UserProperty user = new UserProperty(
                                 document.get("username").toString(),
-                                document.get("fullname").toString(),
-                                document.get("display_picture").toString()
+                                String.valueOf(document.get("fullname")),
+                                String.valueOf(document.get("display_picture"))
                         );
                         listOfUsers.add(user);
                     }

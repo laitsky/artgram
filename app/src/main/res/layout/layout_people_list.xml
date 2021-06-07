@@ -40,12 +40,11 @@
 
     <Button
         android:id="@+id/layout_people_list_btn_follow"
-        android:layout_width="95dp"
-        android:layout_height="40dp"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
         android:text="Follow"
-        android:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
