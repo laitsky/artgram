@@ -20,18 +20,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Source;
-import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +34,6 @@ import id.ac.umn.uasif633a.artgram.models.UserProperty;
 public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.ViewHolder> {
     private static final String TAG = "PeopleListAdapter";
     private ArrayList<UserProperty> users;
-    private ArrayList<UserProperty> ffuser;
     private Context context;
     private String dpUrl, fullname;
 
@@ -66,6 +56,27 @@ public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        DocumentReference loggedInUserRef = db.collection("users").document(firebaseUser.getDisplayName());
+        loggedInUserRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                                fullname = document.get("full_name").toString();
+                                dpUrl = document.get("display_picture").toString();
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
 
         final UserProperty user = users.get(position);
 
@@ -84,39 +95,17 @@ public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.Vi
         holder.getBtnFollow().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(context, users.get(holder.getAdapterPosition()).getUsername(), Toast.LENGTH_SHORT).show();
                 updateUserFollowing(user, holder);
             }
         });
     }
 
     private void updateUserFollowing(UserProperty user, ViewHolder holder){
-
-        db = FirebaseFirestore.getInstance();
         Map<String, Object> newFollowing = new HashMap<>();
         newFollowing.put("username", user.getUsername());
         newFollowing.put("display_picture", user.getDpUrl());
         newFollowing.put("fullname", user.getFullName());
 
-        db.collection("users").document(firebaseUser.getDisplayName())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                                fullname = document.get("full_name").toString();
-                                dpUrl = document.get("display_picture").toString();
-                            } else {
-                                Log.d(TAG, "No such document");
-                            }
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
-                        }
-                    }
-                });
 
         Map<String, Object> newFollowers = new HashMap<>();
         newFollowers.put("username", firebaseUser.getDisplayName());

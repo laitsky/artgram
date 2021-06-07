@@ -19,21 +19,31 @@ import id.ac.umn.uasif633a.artgram.fragments.FollowersFragment;
 import id.ac.umn.uasif633a.artgram.fragments.FollowingFragment;
 
 public class FollowActivity extends AppCompatActivity {
+    private Bundle extras;
+    private boolean following;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_follow);
-        initViewPager();
-    }
-
-    private void initViewPager() {
         ViewPager viewPager = findViewById(R.id.activity_follow_view_pager);
         TabLayout tabLayout = findViewById(R.id.activity_follow_tab_layout);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragments(new FollowingFragment(), "Following");
         viewPagerAdapter.addFragments(new FollowersFragment(), "Followers");
         viewPager.setAdapter(viewPagerAdapter);
+
+        extras = getIntent().getExtras();
+        if (extras != null) {
+            following = extras.getBoolean("FOLLOWING");
+        }
+
+        if(following == true){
+            viewPager.setCurrentItem(0);
+        } else {
+            viewPager.setCurrentItem(1);
+        }
+
         tabLayout.setupWithViewPager(viewPager);
     }
 

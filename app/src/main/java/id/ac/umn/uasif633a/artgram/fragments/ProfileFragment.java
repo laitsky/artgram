@@ -60,6 +60,7 @@ public class ProfileFragment extends Fragment {
     private CircleImageView profileImageView;
     private TextView tvFollowing;
     private TextView tvFollowers;
+    private boolean following;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,7 +120,9 @@ public class ProfileFragment extends Fragment {
         tvFollowing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                following = true;
                 Intent intent = new Intent(getActivity(), FollowActivity.class);
+                intent.putExtra("FOLLOWING", following);
                 startActivity(intent);
             }
         });
@@ -127,7 +130,9 @@ public class ProfileFragment extends Fragment {
         tvFollowers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                following = false;
                 Intent intent = new Intent(getActivity(), FollowActivity.class);
+                intent.putExtra("Following", following);
                 startActivity(intent);
             }
         });
