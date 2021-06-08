@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import id.ac.umn.uasif633a.artgram.R;
+import id.ac.umn.uasif633a.artgram.activities.MainActivity;
 import id.ac.umn.uasif633a.artgram.adapters.HomeFeedsAdapter;
 import id.ac.umn.uasif633a.artgram.models.Post;
 
@@ -58,6 +59,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Home");
     }
 
     @Override

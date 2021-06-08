@@ -23,6 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 import id.ac.umn.uasif633a.artgram.R;
+import id.ac.umn.uasif633a.artgram.activities.MainActivity;
 import id.ac.umn.uasif633a.artgram.adapters.PeopleListAdapter;
 import id.ac.umn.uasif633a.artgram.interfaces.ProfileDataReceiver;
 import id.ac.umn.uasif633a.artgram.models.UserProperty;
@@ -44,6 +45,7 @@ public class PeopleListFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("People Recommendation");
         profile = (ProfileDataReceiver) context;
         username = profile.getUsername();
     }

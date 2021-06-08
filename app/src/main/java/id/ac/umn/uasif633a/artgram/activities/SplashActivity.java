@@ -10,7 +10,7 @@ import id.ac.umn.uasif633a.artgram.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private final int SPLASH_DISPLAY_LENGTH = 1500;
+    private final int SPLASH_DISPLAY_LENGTH = 1250;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
